@@ -1,6 +1,7 @@
 package smit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import parser.BEDentry;
 
@@ -15,6 +16,7 @@ import parser.BEDentry;
 public class SMITGene extends BEDentry 
 {
 	protected ArrayList<SMITReadpair> SMITReadpairList; 
+	private boolean sortedSMITReadpairList = false; 
 	
 	/**
 	 * To be able to generate an instance of this subclass we have to call the constructer of the superclass
@@ -30,8 +32,36 @@ public class SMITGene extends BEDentry
 		setSMITReadpairList( new ArrayList<SMITReadpair>() ); 
 	}
 	
+	/*
+	 * This method registers a readpair to this gene. 
+	 */
+	public void register( final SMITReadpair SMITreadpair )
+	{ 
+		addSMITReadpair( SMITreadpair ); 
+	}
+	
+	/*
+	 * This method sorts the SMITReadpairList based on the polymerase position 
+	 */
+	public void sortSMITReadpairList() 
+	{
+		if( !getSortedSMITReadpairList() )
+		{
+			Collections.sort(getSMITReadpairList(), new SMITReadpairPolymerasePosComparator() ); 
+			setSortedSMITReadpairList( true ); 
+		}
+	}
+	
+	
 	//Getter and setter methods. Control your instance variables. 
 	public void setSMITReadpairList( final ArrayList<SMITReadpair> SMITReadpairList ) { this.SMITReadpairList = SMITReadpairList; }
 	public ArrayList<SMITReadpair> getSMITReadpairList() { return SMITReadpairList; }
-	public void addSMITReadpair( final SMITReadpair smitReadpair ) { getSMITReadpairList().add( smitReadpair ); } 
+	public void addSMITReadpair( final SMITReadpair smitReadpair ) 
+	{ 
+		getSMITReadpairList().add( smitReadpair );
+		setSortedSMITReadpairList( false );  
+	} 
+
+	private void setSortedSMITReadpairList( final boolean sortedSMITReadpairList ) { this.sortedSMITReadpairList = sortedSMITReadpairList; }
+	public boolean getSortedSMITReadpairList() { return this.sortedSMITReadpairList; } 
 }

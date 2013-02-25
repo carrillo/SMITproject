@@ -17,7 +17,7 @@ public class SMITReadpair
 	//Read Id; 
 	protected String readName; 
 	//The splicing state 
-	protected boolean spliced;
+	protected boolean spliced, forwardAndReverseRead = false;
 	//The position of the polymerase based on the reverse read
 	protected long polymerasePosition; 
 	
@@ -54,11 +54,16 @@ public class SMITReadpair
 			//Set forward read and splice information 
 			setForwardRead( forwardRead ); 
 			setSpliced( spliced );
+			setForwardAndReverseRead( true ); 
 			
 			//Read the name of the associated gene from the SAM file. 
 			final String geneId = forwardRead.getReferenceName(); 
 			//Link to the right gene in the colloection.
 			setParentGene( SMITGeneCollection.getGeneHashMap().get( geneId ) ); 
+			
+			//Register readpair at parentgene. 
+			getParentGene().register( this ); 
+			
 			return true; 
 		}
 		else
@@ -76,6 +81,9 @@ public class SMITReadpair
 	
 	public void setSpliced( final boolean spliced ) { this.spliced = spliced; }
 	public boolean isSpliced() { return this.spliced; }
+	
+	public void setForwardAndReverseRead( final boolean forwardAndReverseRead ) { this.forwardAndReverseRead = forwardAndReverseRead; } 
+	public boolean hasForwardAndReverseRead() { return forwardAndReverseRead; } 
 	
 	public void setForwardRead( final SAMRecord forwardRead ) { this.forwardRead = forwardRead; } 
 	public SAMRecord getForwardRead() { return this.forwardRead; }

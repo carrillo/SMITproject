@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import parser.BEDParser;
-import parser.BEDentry;
 
+/**
+ * This class holds all instances of SMITGenes
+ * @author carrillo
+ *
+ */
 public class SMITGeneCollection 
 {
 	//This ArrayList links to all SMITGenes
