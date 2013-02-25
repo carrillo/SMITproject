@@ -49,28 +49,43 @@ public class SMITReadpair
 	 */
 	public boolean addForwardRead( final SAMRecord forwardRead, final boolean spliced, final SMITGeneCollection SMITGeneCollection )
 	{ 
-		if( getForwardRead() == null )
-		{
-			//Set forward read and splice information 
-			setForwardRead( forwardRead ); 
-			setSpliced( spliced );
-			setForwardAndReverseRead( true ); 
-			
-			//Read the name of the associated gene from the SAM file. 
-			final String geneId = forwardRead.getReferenceName(); 
-			//Link to the right gene in the colloection.
-			setParentGene( SMITGeneCollection.getGeneHashMap().get( geneId ) ); 
-			
-			//Register readpair at parentgene. 
-			getParentGene().register( this ); 
-			
-			return true; 
-		}
-		else
-		{
-			System.err.println( "Forward read already present:\nOld entry: " + getForwardRead().toString() + "\nNew entry: " + forwardRead.toString() ); 
+		//Only process those reads which are mapped
+		if( forwardRead.getReadUnmappedFlag() )
 			return false; 
+		else 
+		{
+			if( getForwardRead() == null )
+			{
+				//Set forward read and splice information 
+				setForwardRead( forwardRead ); 
+				setSpliced( spliced );
+				setForwardAndReverseRead( true );
+				
+				
+				//Read the name of the associated gene from the SAM file. Lydia added the splicing state to the id. remove it here
+				final String geneId[] = forwardRead.getReferenceName().split("_");
+				//Link to the right gene in the colloection.
+				setParentGene( SMITGeneCollection.getGeneHashMap().get( geneId[ 0 ] ) ); 
+				 
+				//Register readpair at parentgene. 
+				getParentGene().register( this ); 
+				
+				return true; 	
+				
+			}
+			else
+			{
+				System.err.println( "Forward read already present:\nOld entry: " + getForwardRead().toString() + "\nNew entry: " + forwardRead.toString() ); 
+				return false; 
+			}
 		}
+		
+	}
+	
+	public String toString()
+	{
+		String s = "Name: " + getReadName() + " Forward read: " + getForwardRead() + " Reverse read: " + getReverseRead();
+		return s; 
 	}
 	
 	
@@ -87,6 +102,7 @@ public class SMITReadpair
 	
 	public void setForwardRead( final SAMRecord forwardRead ) { this.forwardRead = forwardRead; } 
 	public SAMRecord getForwardRead() { return this.forwardRead; }
+	
 	public void setReverseRead( final SAMRecord reverseRead ) { this.reverseRead = reverseRead; } 
 	public SAMRecord getReverseRead() { return this.reverseRead; }
 	

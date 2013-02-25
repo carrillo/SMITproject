@@ -29,7 +29,9 @@ public class SMITReadpairCollection
 		HashMap<String, SMITReadpair> readpairHashMap = new HashMap<String, SMITReadpair>(); 
 		
 		for( SMITReadpair readpair : getSMITReadpairCollection() )
-			readpairHashMap.put( readpair.getReverseRead().getReferenceName(), readpair ); 
+		{
+			readpairHashMap.put( readpair.getReverseRead().getReadName(), readpair ); 
+		}
 		
 		setSMITReadpairHashMap( readpairHashMap ); 
 	}

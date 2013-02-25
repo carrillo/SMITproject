@@ -38,13 +38,15 @@ public class SMITData
 	 */
 	public SMITGeneCollection generateGeneCollection( final File bedFile ) throws IOException
 	{
+		System.out.println( "Generate SMIT gene collection from bed file: " + bedFile.getPath() ); 
+		
 		//Get a list of SMIT genes 
 		ArrayList<SMITGene> geneList = BEDParser.parseToSMITGenes( bedFile ); 
 		
 		//Instanciate a SMITGeneCollection, link the list of SMIT genes and generate HashMap  
 		SMITGeneCollection sgc = new SMITGeneCollection(); 
 		sgc.setGeneList( geneList ); 
-		sgc.generateGeneHashMap(); 
+		sgc.setGeneHashMap( sgc.generateGeneHashMap() ); 
 		
 		return sgc; 
 	}
@@ -58,21 +60,31 @@ public class SMITData
 	 */
 	public SMITReadpairCollection generateSMITReadpairs( final File splicedForwardReads, final File unsplicedForwardReads, final File reverseReads ) throws IOException
 	{
+		System.out.println( "Generating SMIT readpair collection." );
 		//Generate a SMITReadpairCollection which will be updated with reverse and forward reads
 		SMITReadpairCollection readpairCollection = new SMITReadpairCollection();  
 		
 		//Add reverse reads first
+		System.out.println( "Generating readpair collection with reverse reads (Pol II position) from sam file: " + reverseReads.getPath() );
 		addReverseReads( reverseReads, readpairCollection ); 
 		//Index the Hashmap in the ReadpairCollection to be able to search indices for forward read matching 
 		readpairCollection.generateSMITReadpairHashMap(); 
+		System.out.println( "Reverse reads added. Generated " + readpairCollection.getSMITReadpairCollection().size() + " SMIT readpairs." );
 		
 		//Add spliced forward reads
+		System.out.println( "Adding spliced forward reads from sam file: " + splicedForwardReads.getPath() );
 		boolean spliced = true; 
 		addForwardReads(splicedForwardReads, readpairCollection, spliced ); 
 		
 		//Add unspliced forward reads 
+		System.out.println( "Adding unspliced forward reads from sam file: " + unsplicedForwardReads.getPath() );
 		spliced = false; 
 		addForwardReads(unsplicedForwardReads, readpairCollection, spliced );
+		
+		for( SMITReadpair rp : readpairCollection.getSMITReadpairCollection() )
+		{
+			System.out.println( rp ); 
+		}
 		
 		return readpairCollection; 
 	}
@@ -114,11 +126,16 @@ public class SMITData
 		while( i.hasNext() )
 		{
 			//Read next sam record
-			SAMRecord sr = i.next();
+			SAMRecord sr = i.next(); 
 			
 			//Check if a SMITpair with the same id is present 
-			SMITReadpair rp = readpairCollection.getSMITReadpairHashMap().get( sr.getReferenceName() ); 
-			rp.addForwardRead(sr, spliced, getGeneCollection() ); 
+			SMITReadpair rp = readpairCollection.getSMITReadpairHashMap().get( sr.getReadName() );
+			
+			if( rp != null )
+			{ 
+				rp.addForwardRead(sr, spliced, getGeneCollection() );
+			}
+			
 		}
 	}
 	
@@ -135,13 +152,16 @@ public class SMITData
 	 */
 	public static void main(String[] args) throws IOException
 	{
-		final File bedFile = new File( "/Volumes/SMITProject/" );
-		final File reverseReads = new File( "/Volumes/SMITProject/" );
-		final File splicedForwardReads = new File( "/Volumes/SMITProject/" );
-		final File unsplicedForwardReads = new File( "/Volumes/SMITProject/" );
+		final long time = System.currentTimeMillis();
 		
-		SMITData sd = new SMITData( bedFile, splicedForwardReads, unsplicedForwardReads, reverseReads ); 
-
+		final File bedFile = new File( "/Volumes/SMITProject/annotation/sgdGenes.bed" );
+		final File reverseReads = new File( "/Volumes/SMITProject/mapped/PE_R1_segL14_tophat.sam" );
+		final File splicedForwardReads = new File( "/Volumes/SMITProject/mapped/SMIT_EEJ_R2.sam" );
+		final File unsplicedForwardReads = new File( "/Volumes/SMITProject/mapped/SMIT_EIJ_R2.sam" );
+		
+		SMITData sd = new SMITData( bedFile, splicedForwardReads, unsplicedForwardReads, reverseReads );
+		
+		System.out.println( "done. [" + (System.currentTimeMillis() - time) + " ms]" );
 	}
 
 }

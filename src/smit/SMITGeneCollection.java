@@ -20,7 +20,7 @@ public class SMITGeneCollection
 	//This hashmap stores each SMITGene object under its id value. It allows very fast and efficient searches
 	protected HashMap<String, SMITGene> geneHashMap;
 	
-	public void generateGeneHashMap() 
+	public HashMap<String, SMITGene> generateGeneHashMap() 
 	{  
 		//Instantiate geneList and geneHashMap. Fill them with content in the loop (s.below).
 		HashMap<String, SMITGene> geneHashMap = new HashMap<String, SMITGene>(); 
@@ -30,6 +30,8 @@ public class SMITGeneCollection
 		{
 			geneHashMap.put( gene.getName(), gene );  
 		}
+		
+		return geneHashMap; 
 	}
 	
 	//Getter and setter. 
