@@ -33,6 +33,8 @@ public class BEDentry
 		
 	}
 	
+	public BEDentry(){}
+	
 	
 	public String toString()
 	{

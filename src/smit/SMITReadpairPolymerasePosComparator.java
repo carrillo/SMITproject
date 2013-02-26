@@ -14,9 +14,9 @@ public class SMITReadpairPolymerasePosComparator implements Comparator<SMITReadp
 	@Override
 	public int compare(SMITReadpair arg0, SMITReadpair arg1) 
 	{
-		if( arg0.getPolymerasePosition() > arg1.getPolymerasePosition() )
+		if( arg0.getPolymerasePosition().getChromStart() > arg1.getPolymerasePosition().getChromStart() )
 			return -1; 
-		else if( arg0.getPolymerasePosition() < arg1.getPolymerasePosition() )
+		else if( arg0.getPolymerasePosition().getChromStart() < arg1.getPolymerasePosition().getChromStart() )
 			return 1; 
 		else 
 			return 0;

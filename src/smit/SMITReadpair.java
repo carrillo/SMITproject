@@ -1,5 +1,7 @@
 package smit;
 
+import parser.BEDentry;
+import parser.SAMTools;
 import net.sf.samtools.SAMRecord;
 
 /**
@@ -19,7 +21,9 @@ public class SMITReadpair
 	//The splicing state 
 	protected boolean spliced, forwardAndReverseRead = false;
 	//The position of the polymerase based on the reverse read
-	protected long polymerasePosition; 
+	protected BEDentry polymerasePosition; 
+	
+	public static int count = 0, doubleCount = 0; 
 	
 	//This constructor takes the reverse read of the SAM files 
 	public SMITReadpair( final SAMRecord reverseRead )
@@ -32,13 +36,14 @@ public class SMITReadpair
 	/**
 	 * This method calculates the polymerase position based on the position of the reverse read
 	 * 
-	 * THIS IS A PLACE HOLDER FOR THE REAL METHOD. THEREFORE IT RETURNS A IMPOSSIBLE VALUE: I.E. -1
+	 * THE GETFIVEPRIMEEND METHOD IS NOT TESTED!
 	 * @return
 	 */
-	public long determinePolymerasePosition()
+	public BEDentry determinePolymerasePosition()
 	{
-		return -1; 
+		return SAMTools.getFivePrimeEnd( getReverseRead() );  
 	}
+	
 	
 	/*
 	 * This method gets a read (SAMRecord) and a boolean if this read stems from the spliced or unspliced
@@ -71,7 +76,6 @@ public class SMITReadpair
 				getParentGene().register( this ); 
 				
 				return true; 	
-				
 			}
 			else
 			{
@@ -109,7 +113,7 @@ public class SMITReadpair
 	public void setReadName( final String readName ) { this.readName = readName; }
 	public String getReadName() { return this.readName; } 
 	
-	public void setPolymerasePosition( final long polymerasePosition ) { this.polymerasePosition = polymerasePosition; } 
-	public long getPolymerasePosition() { return this.polymerasePosition; } 
+	public void setPolymerasePosition( final BEDentry polymerasePosition ) { this.polymerasePosition = polymerasePosition; } 
+	public BEDentry getPolymerasePosition() { return this.polymerasePosition; } 
 	
 }
