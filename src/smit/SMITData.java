@@ -8,6 +8,7 @@ import java.util.Iterator;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import parser.BEDParser;
+import sun.security.provider.SystemIdentity;
 
 /**
  * This is the class collecting all primary information: 
@@ -81,10 +82,25 @@ public class SMITData
 		spliced = false; 
 		addForwardReads(unsplicedForwardReads, readpairCollection, spliced );
 		
+		int count = 0;
+		ArrayList<SMITReadpair> list = readpairCollection.getSMITReadpairCollection(); 
+		for( int i = 0; i < list.size(); i++ )
+		{
+			if( list.get( i ).hasForwardAndReverseRead() ) 
+			{
+				count++; 
+			}
+		}
+		/*
 		for( SMITReadpair rp : readpairCollection.getSMITReadpairCollection() )
 		{
-			System.out.println( rp ); 
+			System.out.println( rp );
 		}
+		*/
+		
+		System.out.println( "The readpair collection contains correct " + count + " entries.");
+		
+		
 		
 		return readpairCollection; 
 	}
@@ -155,6 +171,7 @@ public class SMITData
 	public static void main(String[] args) throws IOException
 	{
 		final long time = System.currentTimeMillis();
+		
 		
 		final File bedFile = new File( "/Volumes/SMITProject/annotation/sgdGenes.bed" );
 		final File reverseReads = new File( "/Volumes/SMITProject/mapped/PE_R1_segL14_tophat.sam" );
