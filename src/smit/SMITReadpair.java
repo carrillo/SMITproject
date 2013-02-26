@@ -21,9 +21,7 @@ public class SMITReadpair
 	//The splicing state 
 	protected boolean spliced, forwardAndReverseRead = false, ignore = false;
 	//The position of the polymerase based on the reverse read
-	protected BEDentry polymerasePosition; 
-	
-	public static int count = 0, doubleCount = 0; 
+	protected BEDentry polymerasePosition;  
 	
 	//This constructor takes the reverse read of the SAM files 
 	public SMITReadpair( final SAMRecord reverseRead )
@@ -68,7 +66,7 @@ public class SMITReadpair
 				
 				
 				//Read the name of the associated gene from the SAM file. Lydia added the splicing state to the id. remove it here
-				final String geneId[] = forwardRead.getReferenceName().split("_");
+				final String[] geneId = forwardRead.getReferenceName().split("_");
 				//Link to the right gene in the colloection.
 				setParentGene( SMITGeneCollection.getGeneHashMap().get( geneId[ 0 ] ) ); 
 				 

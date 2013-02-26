@@ -10,6 +10,7 @@ import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import parser.BEDParser;
+import sun.security.provider.SystemIdentity;
 
 /**
  * This is the class collecting all primary information: 
@@ -90,7 +91,7 @@ public class SMITData
 		//Ignore those reads with no complete forward and reverse set
 		readpairCollection.ignoreIncompleteReadpairs(); 
 		
-		System.out.println( readpairCollection ); 
+		System.out.println( readpairCollection );
 		
 		return readpairCollection; 
 	}
@@ -172,6 +173,7 @@ public class SMITData
 	public static void main(String[] args) throws IOException
 	{
 		final long time = System.currentTimeMillis();
+		
 		
 		final File bedFile = new File( "/Volumes/SMITProject/annotation/sgdGenes.bed" );
 		final File reverseReads = new File( "/Volumes/SMITProject/mapped/PE_R1_segL14_tophat.sam" );
