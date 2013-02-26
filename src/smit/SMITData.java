@@ -107,6 +107,8 @@ public class SMITData
 			//Instanciate readpair with reverse read and add to collection 
 			readpairCollection.addReadPair( new SMITReadpair( sr ) ); 
 		}
+		
+		sfr.close(); 
 	}
 	
 	/**
