@@ -3,8 +3,8 @@ package parser;
 import net.sf.samtools.SAMRecord;
 
 public class SAMTools 
-{
-	public static BEDentry getFivePrimeEnd( final SAMRecord samRecord )
+{	
+	public static BEDentry getThreePrimeEnd( final SAMRecord samRecord )
 	{
 		//Initiate bed entry
 		BEDentry bed = new BEDentry();
@@ -28,13 +28,13 @@ public class SAMTools
 		if( !samRecord.getReadNegativeStrandFlag() )
 		{
 			strand = "+"; 
-			start = samRecord.getAlignmentStart(); 
+			start = samRecord.getAlignmentEnd(); 
 			end = start + 1; 
 		}
 		else 
 		{
 			strand = "-"; 
-			start = samRecord.getAlignmentEnd(); 
+			start = samRecord.getAlignmentStart(); 
 			end = start + 1; 
 		}
 		

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import parser.BEDParser;
@@ -22,6 +24,7 @@ public class SMITData
 	//This is the class linking to the SMITGene enteties
 	protected SMITGeneCollection geneCollection; 
 	protected SMITReadpairCollection readpairCollection; 
+	public static boolean VERBOSE = false; 
 
 	public SMITData( final File bedFile, final File splicedForwardReads, final File unsplicedForwardReads, final File reverseReads ) throws IOException
 	{
@@ -29,7 +32,10 @@ public class SMITData
 		setGeneCollection( generateGeneCollection( bedFile ) );
 		
 		//Generate SMIT readpairs and connect to genes
-		setReadpairCollection( generateSMITReadpairs( splicedForwardReads, unsplicedForwardReads, reverseReads ) ); 
+		setReadpairCollection( generateSMITReadpairs( splicedForwardReads, unsplicedForwardReads, reverseReads ) );
+		
+		//Smit analysis
+		smitAnalysis(); 
 	}
 	
 	/**
@@ -81,12 +87,23 @@ public class SMITData
 		spliced = false; 
 		addForwardReads(unsplicedForwardReads, readpairCollection, spliced );
 		
-		for( SMITReadpair rp : readpairCollection.getSMITReadpairCollection() )
-		{
-			System.out.println( rp ); 
-		}
+		//Ignore those reads with no complete forward and reverse set
+		readpairCollection.ignoreIncompleteReadpairs(); 
+		
+		System.out.println( readpairCollection ); 
 		
 		return readpairCollection; 
+	}
+	
+	public void smitAnalysis()
+	{
+		//getReadpairCollection().removeNonValidReadpairs(); 
+		//getGeneCollection().removeGenesWithNoReads(); 
+		
+		for( SMITGene smitGene : getGeneCollection().getGeneList() )
+		{
+			smitGene.smitAnalysis(); 
+		}
 	}
 	
 	/**
@@ -135,7 +152,7 @@ public class SMITData
 			
 			if( rp != null )
 			{ 
-				rp.addForwardRead(sr, spliced, getGeneCollection() );
+				rp.addForwardRead(sr, spliced, getGeneCollection(), VERBOSE );
 			}
 			
 		}

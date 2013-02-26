@@ -19,7 +19,7 @@ public class SMITReadpair
 	//Read Id; 
 	protected String readName; 
 	//The splicing state 
-	protected boolean spliced, forwardAndReverseRead = false;
+	protected boolean spliced, forwardAndReverseRead = false, ignore = false;
 	//The position of the polymerase based on the reverse read
 	protected BEDentry polymerasePosition; 
 	
@@ -36,12 +36,12 @@ public class SMITReadpair
 	/**
 	 * This method calculates the polymerase position based on the position of the reverse read
 	 * 
-	 * THE GETFIVEPRIMEEND METHOD IS NOT TESTED!
+	 * THE GETTHREEPRIMEEND METHOD IS NOT TESTED!
 	 * @return
 	 */
 	public BEDentry determinePolymerasePosition()
 	{
-		return SAMTools.getFivePrimeEnd( getReverseRead() );  
+		return SAMTools.getThreePrimeEnd( getReverseRead() );  
 	}
 	
 	
@@ -52,7 +52,7 @@ public class SMITReadpair
 	 * @param spliced boolean if present; 
 	 * @return
 	 */
-	public boolean addForwardRead( final SAMRecord forwardRead, final boolean spliced, final SMITGeneCollection SMITGeneCollection )
+	public boolean addForwardRead( final SAMRecord forwardRead, final boolean spliced, final SMITGeneCollection SMITGeneCollection, final boolean verbose )
 	{ 
 		//Only process those reads which are mapped
 		if( forwardRead.getReadUnmappedFlag() )
@@ -79,13 +79,19 @@ public class SMITReadpair
 			}
 			else
 			{
-				System.err.println( "Forward read already present:\nOld entry: " + getForwardRead().toString() + "\nNew entry: " + forwardRead.toString() ); 
+				if( verbose )
+					System.err.println( "Forward read already present:\nOld entry: " + getForwardRead().toString() + "\nNew entry: " + forwardRead.toString() );
+				
+				setIgnore( true ); 
 				return false; 
 			}
 		}
 		
 	}
 	
+	/**
+	 * This method generates a information string about this object
+	 */
 	public String toString()
 	{
 		String s = "Name: " + getReadName() + " Forward read: " + getForwardRead() + " Reverse read: " + getReverseRead();
@@ -102,7 +108,10 @@ public class SMITReadpair
 	public boolean isSpliced() { return this.spliced; }
 	
 	public void setForwardAndReverseRead( final boolean forwardAndReverseRead ) { this.forwardAndReverseRead = forwardAndReverseRead; } 
-	public boolean hasForwardAndReverseRead() { return forwardAndReverseRead; } 
+	public boolean hasForwardAndReverseRead() { return forwardAndReverseRead; }
+	
+	public void setIgnore( final boolean ignore ) { this.ignore = ignore; } 
+	public boolean isIgnore() { return this.ignore; } 
 	
 	public void setForwardRead( final SAMRecord forwardRead ) { this.forwardRead = forwardRead; } 
 	public SAMRecord getForwardRead() { return this.forwardRead; }

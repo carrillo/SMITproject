@@ -17,6 +17,7 @@ public class SMITGene extends BEDentry
 {
 	protected ArrayList<SMITReadpair> SMITReadpairList; 
 	private boolean sortedSMITReadpairList = false; 
+	protected SMITAnalysis smitAnalysis; 
 	
 	/**
 	 * To be able to generate an instance of this subclass we have to call the constructer of the superclass
@@ -52,6 +53,13 @@ public class SMITGene extends BEDentry
 		}
 	}
 	
+	public void smitAnalysis()
+	{
+		setSMITAnalysis( new SMITAnalysis(getSMITReadpairList(),this) );
+		getSMITAnalysis().analyze();
+		System.out.println( getSMITAnalysis() ); 
+	}
+	
 	
 	//Getter and setter methods. Control your instance variables. 
 	public void setSMITReadpairList( final ArrayList<SMITReadpair> SMITReadpairList ) { this.SMITReadpairList = SMITReadpairList; }
@@ -61,7 +69,10 @@ public class SMITGene extends BEDentry
 		getSMITReadpairList().add( smitReadpair );
 		setSortedSMITReadpairList( false );  
 	} 
-
+	
+	private void setSMITAnalysis( final SMITAnalysis smitAnalysis ) { this.smitAnalysis = smitAnalysis; } 
+	public SMITAnalysis getSMITAnalysis() { return this.smitAnalysis; } 
+	
 	private void setSortedSMITReadpairList( final boolean sortedSMITReadpairList ) { this.sortedSMITReadpairList = sortedSMITReadpairList; }
 	public boolean getSortedSMITReadpairList() { return this.sortedSMITReadpairList; } 
 }

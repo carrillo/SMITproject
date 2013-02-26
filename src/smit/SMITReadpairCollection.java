@@ -35,6 +35,33 @@ public class SMITReadpairCollection
 		
 		setSMITReadpairHashMap( readpairHashMap ); 
 	}
+	
+	public void ignoreIncompleteReadpairs()
+	{
+		for( SMITReadpair readpair : getSMITReadpairCollection() )
+		{
+			if( !readpair.forwardAndReverseRead )
+				readpair.setIgnore( true ); 
+		}
+	}
+	
+	/**
+	 * Overrides the toString method. It returns an info string. 
+	 */
+	public String toString()
+	{
+		String s = "Readpair collection contains: " + getSMITReadpairCollection().size() + " entries.";
+		int count = 0; 
+		for( SMITReadpair rp : getSMITReadpairCollection() )
+		{
+			if( !rp.isIgnore() )
+			{
+				count++; 
+			}
+		}
+		s += " Of these " + count + " are valid."; 
+		return s; 
+	}
 
 	//Getter and Setter
 	public void setSMITReadpairCollection( final ArrayList<SMITReadpair> SMITReadpairCollection ) { this.SMITReadpairCollection = SMITReadpairCollection; }
