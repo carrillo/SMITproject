@@ -13,13 +13,13 @@ import net.sf.samtools.SAMRecord;
 public class SMITReadpair 
 {	
 	//Associated gene
-	protected SMITGene parentGene; 
+	protected SMITGene parentGene = null; 
 	//Forward and reverse read
 	protected SAMRecord forwardRead = null, reverseRead = null;
 	//Read Id; 
 	protected String readName; 
 	//The splicing state 
-	protected boolean spliced, forwardAndReverseRead = false, ignore = false;
+	protected boolean spliced, forwardAndReverseRead = false, valid = true;
 	//The position of the polymerase based on the reverse read
 	protected BEDentry polymerasePosition;  
 	
@@ -80,7 +80,7 @@ public class SMITReadpair
 				if( verbose )
 					System.err.println( "Forward read already present:\nOld entry: " + getForwardRead().toString() + "\nNew entry: " + forwardRead.toString() );
 				
-				setIgnore( true ); 
+				setValid( false ); 
 				return false; 
 			}
 		}
@@ -108,8 +108,8 @@ public class SMITReadpair
 	public void setForwardAndReverseRead( final boolean forwardAndReverseRead ) { this.forwardAndReverseRead = forwardAndReverseRead; } 
 	public boolean hasForwardAndReverseRead() { return forwardAndReverseRead; }
 	
-	public void setIgnore( final boolean ignore ) { this.ignore = ignore; } 
-	public boolean isIgnore() { return this.ignore; } 
+	public void setValid( final boolean valid ) { this.valid = valid; } 
+	public boolean isValid() { return this.valid; } 
 	
 	public void setForwardRead( final SAMRecord forwardRead ) { this.forwardRead = forwardRead; } 
 	public SAMRecord getForwardRead() { return this.forwardRead; }

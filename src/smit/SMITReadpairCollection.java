@@ -3,6 +3,8 @@ package smit;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
+
 
 /**
  * This class holds all instances of SMITReadpair
@@ -36,13 +38,53 @@ public class SMITReadpairCollection
 		setSMITReadpairHashMap( readpairHashMap ); 
 	}
 	
+	/**
+	 * This method set's all readpair with only a reverse read as not valid. 
+	 */
 	public void ignoreIncompleteReadpairs()
 	{
 		for( SMITReadpair readpair : getSMITReadpairCollection() )
 		{
-			if( !readpair.forwardAndReverseRead )
-				readpair.setIgnore( true ); 
+			if( !readpair.hasForwardAndReverseRead() )
+				readpair.setValid( false ); 
 		}
+	}
+	
+	/**
+	 * This method removes all readpairs with a valid = false tag
+	 */
+	public void removeInvalidReadpairs()
+	{
+		System.out.println( "Removing invalid readpairs." ); 
+		//Store indices of readpairs to be removed.
+		ArrayList<Integer> removeIndex = new ArrayList<Integer>();
+		SMITReadpair readpair = null; 
+		for( int i = 0; i < getSMITReadpairCollection().size(); i ++ )
+		{
+			readpair = getSMITReadpairCollection().get( i );
+			if( !readpair.isValid() )
+			{
+				//Unregister readpair in parent gene
+				if( readpair.getParentGene() != null )
+				{
+					//System.out.println( "Remove " + readpair.getReadName() + " from " + readpair.getParentGene().getName() ); 						
+					readpair.getParentGene().unregister( readpair );					
+				}
+				removeIndex.add( i ); 
+			} 
+		}
+		
+		//Remove readpairs based on index. 
+		for( int j = ( removeIndex.size() - 1 ); j >= 0; j-- )
+		{
+			getSMITReadpairCollection().remove( j ); 
+		}
+			
+		//Update hashmap 
+		generateSMITReadpairHashMap(); 
+		
+		
+		System.out.println( "Done. Removed " + removeIndex.size() + " invalid entries." ); 
 	}
 	
 	/**
@@ -54,7 +96,7 @@ public class SMITReadpairCollection
 		int count = 0; 
 		for( SMITReadpair rp : getSMITReadpairCollection() )
 		{
-			if( !rp.isIgnore() )
+			if( rp.isValid() )
 			{
 				count++; 
 			}

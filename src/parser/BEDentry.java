@@ -1,5 +1,7 @@
 package parser;
 
+import java.util.ArrayList;
+
 
 public class BEDentry 
 {
@@ -33,8 +35,79 @@ public class BEDentry
 		
 	}
 	
+	
+	
 	public BEDentry(){}
 	
+	/**
+	 * This method extracts all exons   
+	 */
+	public ArrayList<BEDentry> getBlocks()
+	{ 
+		//Extract String[] holding start values (blockStart) and length (blockSize) of all exons.  
+		final String[] blockStart = getBlockStarts().split(",");
+		final String[] blockSize = getBlockSizes().split(",");
+		
+		int start, end; 
+		String strand = "-"; 
+		if( isPlusStrand() )
+			strand = "+"; 
+		
+		ArrayList<BEDentry> blocks = new ArrayList<BEDentry>(); 
+		//Loop through all exons (Exon count is contained in BED field 10). 
+		for( int i = 0; i < getBlockCount() ; i++ )
+		{
+			//Assign absolute start and end values for each exon. This value doesn't consider strandness
+			start = getChromStart() + Integer.parseInt( blockStart[ i ] ); 
+			end = start + Integer.parseInt( blockSize[ i ] ); 
+			
+			//Generate new BED entry for each exon. Each Exon ID is derived from the transcript ID followed by "_Exon" the exon count, followed by "_Up" the extension upstream, followed by "_Do" the extension Downstream. 
+			String bedEntry = getChrom() + "\t" + start + "\t" + end + "\t" + "Exon_" + i + "\t" + getScore() + "\t";
+			bedEntry +=  strand + "\t" + start + "\t" + end + "\t" + getItemRgb() + "\t" + 1 + "\t" + ( end - start ) + "\t" + 0; 
+			
+			blocks.add( new BEDentry( bedEntry ) ); 
+		}
+		
+		return blocks; 
+	}
+	
+	/**
+	 * This method returns the block (exon) at a defined relative position. 
+	 * Use positive values for blocks relative to gene start and negative relative to gene ends. 
+	 * @param relativePosition
+	 * @return
+	 */
+	public BEDentry getBlockAtRelativePosition( final int relativePosition )
+	{
+		ArrayList<BEDentry> blocks = getBlocks(); 
+		
+		int index = -1; 
+		//Extract blocks relative to start 
+		if( relativePosition > 0 )
+		{
+			if( isPlusStrand() )
+			{
+				index = relativePosition - 1; 
+			}
+			else
+			{
+				index = blocks.size() - relativePosition; 
+			}
+		}
+		//Extract blocks relative to end
+		else
+		{	
+			if( isPlusStrand() )
+			{
+				index = blocks.size() + relativePosition; 
+			}
+			else
+			{
+				index = Math.abs( relativePosition ) - 1;   
+			}
+		}
+		return blocks.get( index ); 
+	}
 	
 	public String toString()
 	{

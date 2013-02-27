@@ -1,7 +1,12 @@
 package smit;
 
+import inputOutput.TextFileAccess;
+
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import parser.BEDentry;
 
 public class SMITAnalysis 
 {
@@ -20,7 +25,7 @@ public class SMITAnalysis
 		//Sort the readpair by position.
 		Collections.sort( getSmitReadpairlist(), new SMITReadpairPolymerasePosComparator() );
 		setPosSplicingvalueList( generatePosSplicingvalueList() ); 
-		makePosSplicingvalueListRelativeToTSS(); 
+		makePosSplicingvalueListRelativeToFirst5SS();  
 	}
 	
 	public ArrayList<double[]> generatePosSplicingvalueList() 
@@ -44,6 +49,7 @@ public class SMITAnalysis
 			
 			samePosReads.add( rp );  
 		}
+		posSplicingList.add( getPosSplicingvaluePair( samePosReads ) );
 		
 		return posSplicingList; 
 	}
@@ -71,34 +77,55 @@ public class SMITAnalysis
 		return posSplicingvaluePair; 
 	}
 	
-	public void makePosSplicingvalueListRelativeToTSS()
+	/**
+	 * This method makes the absolute position values relative to the postion of the 5'SS;
+	 */
+	public void makePosSplicingvalueListRelativeToFirst5SS()
 	{
 		ArrayList<double[]> newPosSplicingList = new ArrayList<double[]>(); 
-		 
+		
+		final BEDentry secondExon = getSmitGene().getBlockAtRelativePosition( 2 ); 
+		long fivePrimeSSPos; 
 		if( getSmitGene().isPlusStrand() )
 		{
-			final int tssPos = getSmitGene().getChromStart();
+			fivePrimeSSPos = secondExon.getChromStart(); 
 			for( int i = 0; i < getPosSplicingvalueList().size(); i++ )
 			{
 				final double[] posSplicingPair = new double[ 2 ];
-				posSplicingPair[ 0 ] = getPosSplicingvalueList().get( i )[ 0 ] - tssPos; 
+				posSplicingPair[ 0 ] = getPosSplicingvalueList().get( i )[ 0 ] - fivePrimeSSPos; 
 				posSplicingPair[ 1 ] = getPosSplicingvalueList().get( i )[ 1 ];
 				newPosSplicingList.add( posSplicingPair ); 
 			}
 		}
 		else
 		{
-			final int tssPos = getSmitGene().getChromEnd(); 
+			fivePrimeSSPos = secondExon.getChromEnd();  
 			for( int i = getPosSplicingvalueList().size() - 1; i >= 0; i-- )
 			{
 				final double[] posSplicingPair = new double[ 2 ];
-				posSplicingPair[ 0 ] = getPosSplicingvalueList().get( i )[ 0 ] - tssPos; 
+				posSplicingPair[ 0 ] = fivePrimeSSPos - getPosSplicingvalueList().get( i )[ 0 ]; 
 				posSplicingPair[ 1 ] = getPosSplicingvalueList().get( i )[ 1 ];
 				newPosSplicingList.add( posSplicingPair );
 			}
 		}
 		
 		setPosSplicingvalueList( newPosSplicingList ); 
+	}
+	
+	public void writePosSplicingvalueListToDir( final String directory )
+	{
+		final String fileName = directory + "/" + getSmitGene().getName() + ".smit"; 
+		
+		PrintWriter out = TextFileAccess.openFileWrite( fileName );
+		
+		final String header = "position" + "\t" + "fractionSpliced";
+		out.println( header ); 
+		for( double[] posSplicingPair : getPosSplicingvalueList() )
+		{
+			out.println( posSplicingPair[ 0 ] + "\t" + posSplicingPair[ 1 ] ); 
+		}
+		
+		out.close(); 
 	}
 	
 	public String toString()

@@ -98,8 +98,7 @@ public class SMITData
 	
 	public void smitAnalysis()
 	{
-		//getReadpairCollection().removeNonValidReadpairs(); 
-		//getGeneCollection().removeGenesWithNoReads(); 
+		getReadpairCollection().removeInvalidReadpairs(); 
 		
 		for( SMITGene smitGene : getGeneCollection().getGeneList() )
 		{
@@ -174,8 +173,7 @@ public class SMITData
 	{
 		final long time = System.currentTimeMillis();
 		
-		
-		final File bedFile = new File( "/Volumes/SMITProject/annotation/sgdGenes.bed" );
+		final File bedFile = new File( "/Volumes/SMITProject/annotation/sgdGenes.bed" ); 
 		final File reverseReads = new File( "/Volumes/SMITProject/mapped/PE_R1_segL14_tophat.sam" );
 		final File splicedForwardReads = new File( "/Volumes/SMITProject/mapped/SMIT_EEJ_R2.sam" );
 		final File unsplicedForwardReads = new File( "/Volumes/SMITProject/mapped/SMIT_EIJ_R2.sam" );

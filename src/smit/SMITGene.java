@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import parser.BEDentry;
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 /**
  * Hi Lydia, 
@@ -17,7 +18,7 @@ public class SMITGene extends BEDentry
 {
 	protected ArrayList<SMITReadpair> SMITReadpairList; 
 	private boolean sortedSMITReadpairList = false; 
-	protected SMITAnalysis smitAnalysis; 
+	protected SMITAnalysis smitAnalysis;
 	
 	/**
 	 * To be able to generate an instance of this subclass we have to call the constructer of the superclass
@@ -41,6 +42,11 @@ public class SMITGene extends BEDentry
 		addSMITReadpair( SMITreadpair ); 
 	}
 	
+	public void unregister( final SMITReadpair SMITreadpair )
+	{
+		getSMITReadpairList().remove( SMITreadpair );
+	}
+	
 	/*
 	 * This method sorts the SMITReadpairList based on the polymerase position 
 	 */
@@ -55,9 +61,13 @@ public class SMITGene extends BEDentry
 	
 	public void smitAnalysis()
 	{
-		setSMITAnalysis( new SMITAnalysis(getSMITReadpairList(),this) );
-		getSMITAnalysis().analyze();
-		System.out.println( getSMITAnalysis() ); 
+		if( getSMITReadpairList().size() != 0 )
+		{
+			setSMITAnalysis( new SMITAnalysis(getSMITReadpairList(),this) );
+			getSMITAnalysis().analyze();
+			getSMITAnalysis().writePosSplicingvalueListToDir( "./temp" ); 
+			System.out.println( getSMITAnalysis() ); 			
+		}
 	}
 	
 	
