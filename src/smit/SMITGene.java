@@ -65,7 +65,8 @@ public class SMITGene extends BEDentry
 		{
 			setSMITAnalysis( new SMITAnalysis(getSMITReadpairList(),this) );
 			getSMITAnalysis().analyze();
-			getSMITAnalysis().writePosSplicingvalueListToDir( "./temp" ); 
+			getSMITAnalysis().filterPosSplicingvalueListByAbsoluteReadcount( 10, Integer.MAX_VALUE );
+			getSMITAnalysis().writePosSplicingvalueListToDir( "./temp" );  
 			System.out.println( getSMITAnalysis() ); 			
 		}
 	}

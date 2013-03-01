@@ -12,7 +12,7 @@ public class SMITAnalysis
 {
 	protected SMITGene smitGene; 
 	protected ArrayList<SMITReadpair> smitReadpairList; 
-	protected ArrayList<double[]> posSplicingvalueList; 
+	protected ArrayList<int[]> posSplicingvalueList; 
 	
 	public SMITAnalysis( final ArrayList<SMITReadpair> smitReadpairlist, final SMITGene smitGene )
 	{
@@ -28,9 +28,9 @@ public class SMITAnalysis
 		makePosSplicingvalueListRelativeToFirst5SS();  
 	}
 	
-	public ArrayList<double[]> generatePosSplicingvalueList() 
+	public ArrayList<int[]> generatePosSplicingvalueList() 
 	{
-		ArrayList<double[]> posSplicingList = new ArrayList<double[]>(); 
+		ArrayList<int[]> posSplicingList = new ArrayList<int[]>(); 
 		
 		int previousPos = -1; 
 		ArrayList<SMITReadpair> samePosReads = new ArrayList<SMITReadpair>(); 
@@ -54,23 +54,29 @@ public class SMITAnalysis
 		return posSplicingList; 
 	}
 	
-	public double[] getPosSplicingvaluePair( final ArrayList<SMITReadpair> samePosReads )
+	public int[] getPosSplicingvaluePair( final ArrayList<SMITReadpair> samePosReads )
 	{
-		final double[] posSplicingvaluePair = new double[ 2 ]; 
+		final int[] posSplicingvaluePair = new int[ 3 ]; 
 				
 		int spliced = 0;
+		int unspliced = 0; 
 		for( SMITReadpair rp : samePosReads )
 		{
 			if( rp.isSpliced() )
 			{
 				spliced++; 				
 			}
+			else
+			{
+				unspliced++; 
+			}
 		}
 		
 		//System.out.println( samePosReads.get( 0 ).getPolymerasePosition().getChromStart() + " " + spliced + " " + samePosReads.size() ); 
 		
-		posSplicingvaluePair[ 0 ] = (double) samePosReads.get( 0 ).getPolymerasePosition().getChromStart();
-		posSplicingvaluePair[ 1 ] = ( (double) spliced / (double) samePosReads.size() );  
+		posSplicingvaluePair[ 0 ] = samePosReads.get( 0 ).getPolymerasePosition().getChromStart();
+		posSplicingvaluePair[ 1 ] = spliced;
+		posSplicingvaluePair[ 2 ] = unspliced; 
 		
 		//System.out.println( posSplicingvaluePair[ 0 ] + "\t" + posSplicingvaluePair[ 1 ] ); 
 		
@@ -82,18 +88,19 @@ public class SMITAnalysis
 	 */
 	public void makePosSplicingvalueListRelativeToFirst5SS()
 	{
-		ArrayList<double[]> newPosSplicingList = new ArrayList<double[]>(); 
+		ArrayList<int[]> newPosSplicingList = new ArrayList<int[]>(); 
 		
 		final BEDentry secondExon = getSmitGene().getBlockAtRelativePosition( 2 ); 
-		long fivePrimeSSPos; 
+		int fivePrimeSSPos; 
 		if( getSmitGene().isPlusStrand() )
 		{
 			fivePrimeSSPos = secondExon.getChromStart(); 
 			for( int i = 0; i < getPosSplicingvalueList().size(); i++ )
 			{
-				final double[] posSplicingPair = new double[ 2 ];
+				final int[] posSplicingPair = new int[ 3 ];
 				posSplicingPair[ 0 ] = getPosSplicingvalueList().get( i )[ 0 ] - fivePrimeSSPos; 
 				posSplicingPair[ 1 ] = getPosSplicingvalueList().get( i )[ 1 ];
+				posSplicingPair[ 2 ] = getPosSplicingvalueList().get( i )[ 2 ];
 				newPosSplicingList.add( posSplicingPair ); 
 			}
 		}
@@ -102,9 +109,10 @@ public class SMITAnalysis
 			fivePrimeSSPos = secondExon.getChromEnd();  
 			for( int i = getPosSplicingvalueList().size() - 1; i >= 0; i-- )
 			{
-				final double[] posSplicingPair = new double[ 2 ];
+				final int[] posSplicingPair = new int[ 3 ];
 				posSplicingPair[ 0 ] = fivePrimeSSPos - getPosSplicingvalueList().get( i )[ 0 ]; 
 				posSplicingPair[ 1 ] = getPosSplicingvalueList().get( i )[ 1 ];
+				posSplicingPair[ 2 ] = getPosSplicingvalueList().get( i )[ 2 ]; 
 				newPosSplicingList.add( posSplicingPair );
 			}
 		}
@@ -118,22 +126,36 @@ public class SMITAnalysis
 		
 		PrintWriter out = TextFileAccess.openFileWrite( fileName );
 		
-		final String header = "position" + "\t" + "fractionSpliced";
+		final String header = "position" + "\t" + "splicedReads" + "\t" + "unsplicedReads";
 		out.println( header ); 
-		for( double[] posSplicingPair : getPosSplicingvalueList() )
+		for( int[] posSplicingPair : getPosSplicingvalueList() )
 		{
-			out.println( posSplicingPair[ 0 ] + "\t" + posSplicingPair[ 1 ] ); 
+			out.println( posSplicingPair[ 0 ] + "\t" + posSplicingPair[ 1 ] + "\t" + posSplicingPair[ 2 ]); 
 		}
 		
 		out.close(); 
 	}
 	
+	public void filterPosSplicingvalueListByAbsoluteReadcount( final int minReadCount, final int maxReadCount )
+	{
+		ArrayList<int[]> newList = new ArrayList<int[]>();
+		
+		int readCount = 0; 
+		for( int[] valuePair : getPosSplicingvalueList() )
+		{
+			readCount = valuePair[ 1 ] + valuePair[ 2 ]; 
+			if( readCount >= minReadCount && readCount <= maxReadCount )
+				newList.add( valuePair ); 
+		}
+		setPosSplicingvalueList( newList ); 
+	}
+	
 	public String toString()
 	{
 		String s = getSmitGene().getName() + "\n";
-		for( double[] posSplicingPair : getPosSplicingvalueList() )
+		for( int[] posSplicingPair : getPosSplicingvalueList() )
 		{
-			s += posSplicingPair[ 0 ] + "\t" + posSplicingPair[ 1 ] + "\n"; 
+			s += posSplicingPair[ 0 ] + "\t" + posSplicingPair[ 1 ] + "\t" + posSplicingPair[ 2 ] + "\n"; 
 		}
 			
 		return s; 
@@ -145,6 +167,6 @@ public class SMITAnalysis
 	private void setSmitGene( final SMITGene smitGene ) { this.smitGene = smitGene; } 
 	private SMITGene getSmitGene() { return this.smitGene; }
 	
-	private void setPosSplicingvalueList( final ArrayList<double[]> posSplicingvalueList ) { this.posSplicingvalueList = posSplicingvalueList; } 
-	public ArrayList<double[]> getPosSplicingvalueList() { return this.posSplicingvalueList; } 
+	private void setPosSplicingvalueList( final ArrayList<int[]> posSplicingvalueList ) { this.posSplicingvalueList = posSplicingvalueList; } 
+	public ArrayList<int[]> getPosSplicingvalueList() { return this.posSplicingvalueList; } 
 }
