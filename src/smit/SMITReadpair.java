@@ -39,7 +39,8 @@ public class SMITReadpair
 	 */
 	public BEDentry determinePolymerasePosition()
 	{
-		return SAMTools.getThreePrimeEnd( getReverseRead() );  
+		//return SAMTools.getThreePrimeEnd( getReverseRead() );
+		return SAMTools.getFivePrimeEnd( getReverseRead() );
 	}
 	
 	
