@@ -2,6 +2,7 @@ package smit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
@@ -94,14 +95,25 @@ public class SMITReadpairCollection
 	{
 		String s = "Readpair collection contains: " + getSMITReadpairCollection().size() + " entries.";
 		int count = 0; 
+		HashSet<SMITGene> geneHash = new HashSet<SMITGene>(); 
 		for( SMITReadpair rp : getSMITReadpairCollection() )
 		{
 			if( rp.isValid() )
 			{
-				count++; 
+				if( !geneHash.contains( rp.getParentGene() ) )
+					geneHash.add( rp.getParentGene() ); 
+				
+				count++;
 			}
 		}
-		s += " Of these " + count + " are valid."; 
+		s += " Of these " + count + " are valid.\n";
+		s += "Genes with at least 10 valid reads:\n"; 
+		for( SMITGene sg : geneHash )
+		{
+			if( sg.getSMITReadpairList().size() > 9 )
+				s += sg + "\n"; 
+		}
+		
 		return s; 
 	}
 

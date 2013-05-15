@@ -4,7 +4,7 @@ import net.sf.samtools.SAMRecord;
 
 public class SAMTools 
 {	
-	public static BEDentry getThreePrimeEnd( final SAMRecord samRecord )
+	public static BEDentry getFivePrimeEnd( final SAMRecord samRecord )
 	{
 		//Initiate bed entry
 		BEDentry bed = new BEDentry();
@@ -47,7 +47,7 @@ public class SAMTools
 		return bed; 
 	}
 	
-	public static BEDentry getFivePrimeEnd( final SAMRecord samRecord )
+	public static BEDentry getThreePrimeEnd( final SAMRecord samRecord )
 	{
 		//Initiate bed entry
 		BEDentry bed = new BEDentry();
