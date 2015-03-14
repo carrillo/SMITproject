@@ -1,5 +1,8 @@
 package smit;
 
+import inputOutput.TextFileAccess;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +35,23 @@ public class SMITGeneCollection
 		}
 		
 		return geneHashMap; 
+	}
+	
+	/**
+	 * Add the forward primer position to the smit genes. 
+	 * @param primerDesignFile
+	 */
+	public void addPrimerPositionInfo( final File primerDesignFile ) throws IOException 
+	{
+		HashMap<String, SMITGene> geneHash = generateGeneHashMap(); 
+		
+		BufferedReader in = TextFileAccess.openFileRead( primerDesignFile );
+		String[] entries;
+		while( in.ready() ) {
+			entries = in.readLine().split("\t");
+			
+			geneHash.get( entries[ 0 ] ).associatePrimerInfo( entries );
+		}
 	}
 	
 	//Getter and setter. 

@@ -60,6 +60,7 @@ public class SMITReadpairCollection
 		//Store indices of readpairs to be removed.
 		ArrayList<Integer> removeIndex = new ArrayList<Integer>();
 		SMITReadpair readpair = null; 
+		ArrayList<SMITReadpair> validSMITReadpairCollection = new ArrayList<SMITReadpair>(); 
 		for( int i = 0; i < getSMITReadpairCollection().size(); i ++ )
 		{
 			readpair = getSMITReadpairCollection().get( i );
@@ -70,16 +71,23 @@ public class SMITReadpairCollection
 				{
 					//System.out.println( "Remove " + readpair.getReadName() + " from " + readpair.getParentGene().getName() ); 						
 					readpair.getParentGene().unregister( readpair );					
-				}
+				}  
 				removeIndex.add( i ); 
-			} 
+			} else {
+				validSMITReadpairCollection.add( getSMITReadpairCollection().get(i) ); 
+			}
 		}
 		
+		setSMITReadpairCollection(validSMITReadpairCollection);
+		
+		/*
+		System.out.println("Removing reads from readpair collection"); 
 		//Remove readpairs based on index. 
 		for( int j = ( removeIndex.size() - 1 ); j >= 0; j-- )
 		{
 			getSMITReadpairCollection().remove( j ); 
 		}
+		*/
 			
 		//Update hashmap 
 		generateSMITReadpairHashMap(); 

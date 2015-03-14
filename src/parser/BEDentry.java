@@ -23,6 +23,7 @@ public class BEDentry
 		setChromEnd( Integer.parseInt( entries[ 2 ] ) );
 		setName( entries[ 3 ] );
 		
+		
 		setScore( Integer.parseInt( entries[ 4 ] ) ); 
 		setStrand( entries[ 5 ] ); 
 		setThickStart( Integer.parseInt( entries[ 6 ] ) ); 
@@ -34,6 +35,65 @@ public class BEDentry
 		setBlockStarts( entries[ 11 ] ); 
 		
 	}
+	
+	/**
+	 * Constructor with all items. 
+	 * @param chrom
+	 * @param chromStart
+	 * @param chromEnd
+	 * @param name
+	 * @param score
+	 * @param strand
+	 * @param thickStart
+	 * @param thickEnd
+	 * @param rgb
+	 * @param blockCount
+	 * @param blockSizes
+	 * @param blockStarts
+	 */
+	public BEDentry( final String chrom, final int chromStart, final int chromEnd, final String name, 
+			final int score, final String strand, final int thickStart, final int thickEnd, 
+			final String rgb, final int blockCount, final String blockSizes, final String blockStarts ) {
+		
+		setChrom(chrom);
+		setChromStart(chromStart);
+		setChromEnd(chromEnd);
+		setName(name);
+		setScore(score);
+		setStrand(strand);
+		setThickStart(thickStart);
+		setThickEnd(thickEnd);
+		setItemRgb(rgb);
+		setBlockCount(blockCount);
+		setBlockSizes(blockSizes);
+		setBlockStarts(blockStarts);
+	}
+	
+	/**
+	 * Convenient constuctor setting only the crucial fields and inferring remaining. 
+	 * @param chrom
+	 * @param chromStart
+	 * @param chromEnd
+	 * @param name
+	 * @param strand
+	 */
+	public BEDentry( final String chrom, final int chromStart, final int chromEnd, final String name, 
+			final String strand ) {
+		
+		setChrom(chrom);
+		setChromStart(chromStart);
+		setChromEnd(chromEnd);
+		setName(name);
+		setScore(0);
+		setStrand(strand);
+		setThickStart(chromStart);
+		setThickEnd(chromEnd);
+		
+		setBlockCount(1);
+		setBlockSizes("" + (chromEnd - chromStart));
+		setBlockStarts("0");
+	}
+	
 	
 	
 	

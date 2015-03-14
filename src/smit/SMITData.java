@@ -5,12 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
-
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import parser.BEDParser;
-import sun.security.provider.SystemIdentity;
 
 /**
  * This is the class collecting all primary information: 
@@ -27,24 +24,26 @@ public class SMITData
 	protected SMITReadpairCollection readpairCollection; 
 	public static boolean VERBOSE = false; 
 
-	public SMITData( final File bedFile, final File splicedForwardReads, final File unsplicedForwardReads, final File reverseReads ) throws IOException
+	public SMITData( final File bedFile, final File primerDesignFile,
+			final File splicedForwardReads, final File unsplicedForwardReads, final File reverseReads, 
+			final File outputDir ) throws IOException
 	{
 		//Generate Gene collection
 		boolean verbose = true; 
-		setGeneCollection( generateGeneCollection( bedFile, verbose ) );
+		setGeneCollection( generateGeneCollection( bedFile, primerDesignFile, verbose ) );
 		
 		//Generate SMIT readpairs and connect to genes
 		setReadpairCollection( generateSMITReadpairs( splicedForwardReads, unsplicedForwardReads, reverseReads, verbose ) );
 		
 		//Smit analysis
-		smitAnalysis( verbose ); 
+		smitAnalysis( verbose, outputDir ); 
 	}
 	
 	/**
 	 * This method constructs the geneCollection from the bedFile
 	 * @param bedFile
 	 */
-	public SMITGeneCollection generateGeneCollection( final File bedFile, final boolean verbose ) throws IOException
+	public SMITGeneCollection generateGeneCollection( final File bedFile, final File primerDesignFile, final boolean verbose ) throws IOException
 	{
 		System.out.println( "Generate SMIT gene collection from bed file: " + bedFile.getPath() ); 
 		
@@ -66,7 +65,8 @@ public class SMITData
 		
 		//Instanciate a SMITGeneCollection, link the list of SMIT genes and generate HashMap  
 		SMITGeneCollection sgc = new SMITGeneCollection(); 
-		sgc.setGeneList( geneList ); 
+		sgc.setGeneList( geneList );
+		sgc.addPrimerPositionInfo( primerDesignFile );
 		sgc.setGeneHashMap( sgc.generateGeneHashMap() ); 
 		
 		System.out.println( "Generate SMIT gene collection, done. \n----- \n" );
@@ -112,14 +112,14 @@ public class SMITData
 		return readpairCollection; 
 	}
 	
-	public void smitAnalysis( final boolean verbose )
+	public void smitAnalysis( final boolean verbose, final File outputDir  )
 	{
 		System.out.println("Perform SMIT analysis." ); 
 		getReadpairCollection().removeInvalidReadpairs(); 
 		
 		for( SMITGene smitGene : getGeneCollection().getGeneList() )
 		{
-			smitGene.smitAnalysis(); 
+			smitGene.smitAnalysis( outputDir ); 
 		}
 		System.out.println( "Perform SMIT analysis, done. \n----- \n" );
 	}
@@ -229,12 +229,34 @@ public class SMITData
 	{
 		final long time = System.currentTimeMillis();
 		
-		final File bedFile = new File( "/Volumes/SMITProject/annotation/sgdGenes.bed" ); 
-		final File reverseReads = new File( "/Volumes/SMITProject/mapped/PE_R1_segL14_tophat.sam" );
-		final File splicedForwardReads = new File( "/Volumes/SMITProject/mapped/SMIT_EEJ_R2.sam" );
-		final File unsplicedForwardReads = new File( "/Volumes/SMITProject/mapped/SMIT_EIJ_R2.sam" );
+		/*
+		final File bedFile = new File( "/Users/carrillo/Desktop/smitData/sgdGenes.bed" ); 
+		final File primerDesignFile = new File( "/Users/carrillo/Desktop/smitData/primerListAllIntronGenes.txt" ); 
 		
-		SMITData sd = new SMITData( bedFile, splicedForwardReads, unsplicedForwardReads, reverseReads );
+		
+		final File reverseReads = new File( "/Users/carrillo/Desktop/smitData/SMIT_082014/SMIT_R1_woRG.bam" );
+		final File splicedForwardReads = new File( "/Users/carrillo/Desktop/smitData/SMIT_082014/SMIT_R2_EEJ_woRG.bam" );
+		final File unsplicedForwardReads = new File( "/Users/carrillo/Desktop/smitData/SMIT_082014/SMIT_R2_EIJ_woRG.bam" );
+		final File outputDir = new File( "/Users/carrillo/Desktop/smitData/SMIT_082014/SMITFiles" );
+		*/
+		
+		final File bedFile = new File( "resources/sgdGenes.bed" ); 
+		final File primerDesignFile = new File( "resources/primerListAllIntronGenes.txt" ); 
+		
+		/*
+		final File reverseReads = new File( "resources/SMIT_082014/SMIT_R1_woRG.bam" );
+		final File splicedForwardReads = new File( "resources/SMIT_082014/SMIT_R2_EEJ_woRG.bam" );
+		final File unsplicedForwardReads = new File( "resources/SMIT_082014/SMIT_R2_EIJ_woRG.bam" );
+		final File outputDir = new File( "resources/SMIT_082014/SMITFiles" );
+		*/
+		
+		final File reverseReads = new File( "resources/SMIT_178/SMIT_178_R1.sorted.bam" );
+		final File splicedForwardReads = new File( "resources/SMIT_178/SMIT_178_R2_EEJ.bam" );
+		final File unsplicedForwardReads = new File( "resources/SMIT_178/SMIT_178_R2_EIJ.bam" );
+		final File outputDir = new File( "resources/SMIT_178/SMITFiles" );
+		
+		
+		SMITData sd = new SMITData( bedFile, primerDesignFile, splicedForwardReads, unsplicedForwardReads, reverseReads, outputDir );
 		
 		System.out.println( "done. [" + (System.currentTimeMillis() - time) + " ms]" );
 	}

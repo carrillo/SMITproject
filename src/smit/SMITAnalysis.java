@@ -2,6 +2,7 @@ package smit;
 
 import inputOutput.TextFileAccess;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +26,7 @@ public class SMITAnalysis
 		//Sort the readpair by position.
 		Collections.sort( getSmitReadpairlist(), new SMITReadpairPolymerasePosComparator() );
 		setPosSplicingvalueList( generatePosSplicingvalueList() ); 
-		makePosSplicingvalueListRelativeToFirst5SS();  
+		makePosSplicingvalueListRelativeToFirst3SS();  
 	}
 	
 	public ArrayList<int[]> generatePosSplicingvalueList() 
@@ -86,7 +87,7 @@ public class SMITAnalysis
 	/**
 	 * This method makes the absolute position values relative to the postion of the 5'SS;
 	 */
-	public void makePosSplicingvalueListRelativeToFirst5SS()
+	public void makePosSplicingvalueListRelativeToFirst3SS()
 	{
 		ArrayList<int[]> newPosSplicingList = new ArrayList<int[]>(); 
 		
@@ -120,17 +121,22 @@ public class SMITAnalysis
 		setPosSplicingvalueList( newPosSplicingList ); 
 	}
 	
-	public void writePosSplicingvalueListToDir( final String directory )
+	public void writePosSplicingvalueListToDir( final File directory )
 	{
-		final String fileName = directory + "/" + getSmitGene().getName() + ".smit"; 
+		final String fileName = directory.getAbsolutePath() + "/" + getSmitGene().getName() + ".smit"; 
 		
 		PrintWriter out = TextFileAccess.openFileWrite( fileName );
 		
-		final String header = "position" + "\t" + "splicedReads" + "\t" + "unsplicedReads";
-		out.println( header ); 
+		final String header = "relPosition" + "\t" + "splicedLength" + "\t" + "unsplicedLength" + "\t" + "splicedReads" + "\t" + "unsplicedReads";
+		out.println( header );
+		
+		int relPosition, splicedLength, unsplicedLength; 
 		for( int[] posSplicingPair : getPosSplicingvalueList() )
 		{
-			out.println( posSplicingPair[ 0 ] + "\t" + posSplicingPair[ 1 ] + "\t" + posSplicingPair[ 2 ]); 
+			relPosition = posSplicingPair[ 0 ]; 
+			splicedLength = getSmitGene().primerIntronDistance + posSplicingPair[ 0 ];
+			unsplicedLength = getSmitGene().getIntronLength() + splicedLength; 
+			out.println( relPosition + "\t" + splicedLength + "\t" + unsplicedLength + "\t" + posSplicingPair[ 1 ] + "\t" + posSplicingPair[ 2 ]); 
 		}
 		
 		out.close(); 

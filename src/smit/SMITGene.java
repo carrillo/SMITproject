@@ -1,5 +1,6 @@
 package smit;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -19,6 +20,8 @@ public class SMITGene extends BEDentry
 	protected ArrayList<SMITReadpair> SMITReadpairList; 
 	private boolean sortedSMITReadpairList = false; 
 	protected SMITAnalysis smitAnalysis;
+	protected int primerIntronDistance; 
+	protected String forPrimerSequence; 
 	
 	/**
 	 * To be able to generate an instance of this subclass we have to call the constructer of the superclass
@@ -59,16 +62,46 @@ public class SMITGene extends BEDentry
 		}
 	}
 	
-	public void smitAnalysis()
+	/*
+	 * Associate primer info with smit gene. 
+	 * 1. Add primer intron distance value. 
+	 */
+	public void associatePrimerInfo( final String[] entries )
+	{
+		setForPrimerSequence( entries[ 1 ] );
+		setPrimerIntronDistance( Integer.valueOf( entries[ 2  ] ) );  
+	}
+	
+	public void smitAnalysis( final File outputDir )
 	{
 		if( getSMITReadpairList().size() != 0 )
 		{
-			setSMITAnalysis( new SMITAnalysis(getSMITReadpairList(),this) );
+			setSMITAnalysis( new SMITAnalysis( getSMITReadpairList(),this ) );
 			getSMITAnalysis().analyze();
 			getSMITAnalysis().filterPosSplicingvalueListByAbsoluteReadcount( 10, Integer.MAX_VALUE );
-			getSMITAnalysis().writePosSplicingvalueListToDir( "./temp" );  
+			getSMITAnalysis().writePosSplicingvalueListToDir( outputDir );  
 			System.out.println( getSMITAnalysis() ); 			
 		}
+	}
+	
+	public int getIntronLength()
+	{
+		ArrayList<BEDentry> exons = getBlocks(); 
+		
+		
+		int start, end; 
+		if( isPlusStrand() )
+		{
+			start = exons.get( 0 ).getChromEnd(); 
+			end = exons.get( 1 ).getChromStart();  
+		}
+		else 
+		{
+			start = exons.get( exons.size() - 2 ).getChromEnd(); 
+			end = exons.get( exons.size() - 1 ).getChromStart(); 
+		}
+		
+		return ( end - start - 1 ); 
 	}
 	
 	
@@ -79,11 +112,18 @@ public class SMITGene extends BEDentry
 	{ 
 		getSMITReadpairList().add( smitReadpair );
 		setSortedSMITReadpairList( false );  
-	} 
+	}
+	
+	private void setPrimerIntronDistance( final int primerIntronDistance ) { this.primerIntronDistance = primerIntronDistance; }  
+	public int getPrimerIntronDistance() { return this.primerIntronDistance; }
+	
+	private void setForPrimerSequence( final String forPrimerSequence ) { this.forPrimerSequence = forPrimerSequence; } 
+	public String getForPrimerSequence() { return this.forPrimerSequence; }
 	
 	private void setSMITAnalysis( final SMITAnalysis smitAnalysis ) { this.smitAnalysis = smitAnalysis; } 
 	public SMITAnalysis getSMITAnalysis() { return this.smitAnalysis; } 
 	
 	private void setSortedSMITReadpairList( final boolean sortedSMITReadpairList ) { this.sortedSMITReadpairList = sortedSMITReadpairList; }
-	public boolean getSortedSMITReadpairList() { return this.sortedSMITReadpairList; } 
+	public boolean getSortedSMITReadpairList() { return this.sortedSMITReadpairList; }
+	
 }
