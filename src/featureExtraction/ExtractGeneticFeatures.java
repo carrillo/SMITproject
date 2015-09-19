@@ -226,6 +226,20 @@ public class ExtractGeneticFeatures {
 		out.close();
 	}
 	
+	public void writeTerminalExonBED(final File fileout ) {
+		PrintWriter out = TextFileAccess.openFileWrite( fileout.getAbsolutePath() ); 
+		
+		BEDentry terminalExon; 
+		for( GeneticFeatureInfo gfi : getGenes() ) {
+			terminalExon = gfi.getBEDentry().getBlockAtRelativePosition(-1);
+			terminalExon.setName( (gfi.getBEDentry().getName() + "_TerminalExon") );
+			out.println(terminalExon); 
+		}
+		
+		out.flush(); 
+		out.close();
+	}
+	
 	/**
 	 * Write features to file 
 	 */
@@ -282,7 +296,8 @@ public class ExtractGeneticFeatures {
 		egf.associateSpliceSequence();
 		egf.associateBranchPoint();
 		egf.rankSequences();
-		egf.writeHallmarkBEDFiles( new File("/Users/carrillo/Dropbox/SMIT/annotations/Scer3/hallmarks.BED") ); 
+		egf.writeHallmarkBEDFiles( new File("/Users/carrillo/Dropbox/SMIT/annotations/Scer3/hallmarks.BED") );
+		egf.writeTerminalExonBED( new File("/Users/carrillo/Dropbox/SMIT/annotations/Scer3/terminalExons.BED") );
 		egf.writeFeatureFile( new File("/Users/carrillo/Dropbox/SMIT/annotations/Scer3/geneticFeatures.featureFile") );
 			
 		

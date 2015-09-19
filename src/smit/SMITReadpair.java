@@ -70,8 +70,11 @@ public class SMITReadpair
 				//Read the name of the associated gene from the SAM file. Lydia added the splicing state to the id. remove it here
 				final String[] geneId = forwardRead.getReferenceName().split("_");
 				//Link to the right gene in the colloection.
+				System.out.println(geneId[ 0 ]); 
 				setParentGene( SMITGeneCollection.getGeneHashMap().get( geneId[ 0 ] ) ); 
-				 
+				
+				System.out.println(getParentGene());
+				
 				//Register readpair at parentgene. 
 				getParentGene().register( this ); 
 				

@@ -118,8 +118,8 @@ public class SMITData
 		getReadpairCollection().removeInvalidReadpairs(); 
 		
 		for( SMITGene smitGene : getGeneCollection().getGeneList() )
-		{
-			smitGene.smitAnalysis( outputDir ); 
+		{				
+				smitGene.smitAnalysis( outputDir ); 
 		}
 		System.out.println( "Perform SMIT analysis, done. \n----- \n" );
 	}
@@ -185,7 +185,9 @@ public class SMITData
 		while( i.hasNext() )
 		{
 			//Read next sam record
-			SAMRecord sr = i.next();				
+			SAMRecord sr = i.next();
+			
+			//System.out.println(sr);
 			
 			if( sr.getReadNegativeStrandFlag() )
 				minusCount++; 
@@ -194,6 +196,7 @@ public class SMITData
 			
 			//Check if a SMITpair with the same id is present 
 			SMITReadpair rp = readpairCollection.getSMITReadpairHashMap().get( sr.getReadName() );
+			//System.out.println(rp); 
 
 			
 			if( rp != null )
@@ -240,8 +243,15 @@ public class SMITData
 		final File outputDir = new File( "/Users/carrillo/Desktop/smitData/SMIT_082014/SMITFiles" );
 		*/
 		
-		final File bedFile = new File( "resources/sgdGenes.bed" ); 
-		final File primerDesignFile = new File( "resources/primerListAllIntronGenes.txt" ); 
+		
+		final File bedFile = new File( "resources/Scer3_all.bed" ); 
+		final File primerDesignFile = new File( "resources/primerListAllIntronGenes.txt" );
+		 
+		
+		/*
+		final File bedFile = new File( "resources/MS2_12field.bed" ); 
+		final File primerDesignFile = new File( "resources/primer_MS2_190.txt" );
+		*/
 		
 		/*
 		final File reverseReads = new File( "resources/SMIT_082014/SMIT_R1_woRG.bam" );
@@ -250,11 +260,53 @@ public class SMITData
 		final File outputDir = new File( "resources/SMIT_082014/SMITFiles" );
 		*/
 		
+		/*
+		final File reverseReads = new File( "resources/totalRNA/R1.bam" );
+		final File splicedForwardReads = new File( "resources/totalRNA/R2_EEJ.bam" );
+		final File unsplicedForwardReads = new File( "resources/totalRNA/R2_EIJ.bam" );
+		final File outputDir = new File( "resources/totalRNA/SMITFiles" );
+		*/
+		
+		/*
+		final File reverseReads = new File( "resources/475/468_475_MS2_R1.bam" );
+		final File splicedForwardReads = new File( "resources/475/475_all_MS2_R2_EEJ.bam" );
+		final File unsplicedForwardReads = new File( "resources/475/475_all_MS2_R2_EIJ.bam" );
+		final File outputDir = new File( "resources/475/SMITFiles" );
+		*/
+		
+		final File reverseReads = new File( "resources/fast/fast_R1.bam" );
+		final File splicedForwardReads = new File( "resources/fast/fast_EEJ.bam" );
+		final File unsplicedForwardReads = new File( "resources/fast/fast_EIJ.bam" );
+		final File outputDir = new File( "resources/fast/SMITFiles" );
+		
+		
+		/*
 		final File reverseReads = new File( "resources/SMIT_178/SMIT_178_R1.sorted.bam" );
 		final File splicedForwardReads = new File( "resources/SMIT_178/SMIT_178_R2_EEJ.bam" );
 		final File unsplicedForwardReads = new File( "resources/SMIT_178/SMIT_178_R2_EIJ.bam" );
 		final File outputDir = new File( "resources/SMIT_178/SMITFiles" );
+		*/
+
+		/*
+		final File reverseReads = new File( "resources/totalRNA/SMIT_totalRNA_4_tophat2_R1.bam" );
+		final File splicedForwardReads = new File( "resources/totalRNA/SMIT_totalRNA_4_EEJ.bam" );
+		final File unsplicedForwardReads = new File( "resources/totalRNA/SMIT_totalRNA_4_EIJ.bam" );
+		final File outputDir = new File( "resources/totalRNA/SMITFiles4" );
+		*/
 		
+		/*
+		final File reverseReads = new File( "/Volumes/DiskA/SMIT/reads/totalRNA/pooled/SMIT_totalRNA_all_tophat2_R1.bam" );
+		final File splicedForwardReads = new File( "/Volumes/DiskA/SMIT/reads/totalRNA/pooled/SMIT_totalRNA_all_EEJ.bam" );
+		final File unsplicedForwardReads = new File( "/Volumes/DiskA/SMIT/reads/totalRNA/pooled/SMIT_totalRNA_all_EIJ.bam" );
+		final File outputDir = new File( "/Volumes/DiskA/SMIT/reads/totalRNA/pooled/SMITFiles" );
+		*/
+		
+		/*
+		final File reverseReads = new File( "/Volumes/DiskA/SMIT/reads/phz18/475/468_475_MS2_tophat2_R1.bam" );
+		final File splicedForwardReads = new File( "/Volumes/DiskA/SMIT/reads/phz18/475/475_MS2_R2_EEJ.bam" );
+		final File unsplicedForwardReads = new File( "/Volumes/DiskA/SMIT/reads/phz18/475/475_MS2_R2_EIJ.bam" );
+		final File outputDir = new File( "/Volumes/DiskA/SMIT/reads/phz18/475/SMITFiles" );
+		*/
 		
 		SMITData sd = new SMITData( bedFile, primerDesignFile, splicedForwardReads, unsplicedForwardReads, reverseReads, outputDir );
 		

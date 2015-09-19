@@ -90,7 +90,7 @@ public class SMITAnalysis
 	public void makePosSplicingvalueListRelativeToFirst3SS()
 	{
 		ArrayList<int[]> newPosSplicingList = new ArrayList<int[]>(); 
-		
+		//System.out.println(getSmitGene().getName() + "\t" + getSmitGene().getBlockCount() ); 
 		final BEDentry secondExon = getSmitGene().getBlockAtRelativePosition( 2 ); 
 		int fivePrimeSSPos; 
 		if( getSmitGene().isPlusStrand() )
