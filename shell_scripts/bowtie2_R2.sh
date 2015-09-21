@@ -8,7 +8,7 @@ then
 	exit  
 fi
 
-# comment
+# comment2
 
 input=$1
 #index_EIJ="/Volumes/DiskMeen/SMIT_clean/mapping/bowtieIndices/Bowtie2Indices/Scer3_110_EIJ"
