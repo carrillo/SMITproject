@@ -4,26 +4,29 @@
 
 if [ $# -ne 1 ]
 then
-	echo " provide: ls <R2>.fastq > in_R2 "
+	echo "This script maps R2 reads to the S. cerevisiae genome (Scer3/ Apr 2011) and distinguishes between spliced and unspliced reads."
+	echo "Please provide a list of R2 read files: ls <R2>.fastq > in_R2 ."
 	exit  
 fi
 
-# comment1
-
 input=$1
-#index_EIJ="/Volumes/DiskMeen/SMIT_clean/mapping/bowtieIndices/Bowtie2Indices/Scer3_110_EIJ"
-#index_EEJ="/Volumes/DiskMeen/SMIT_clean/mapping/bowtieIndices/Bowtie2Indices/Scer3_110_EEJ"
 
-index_EIJ="~/Documents/LAB_STUFF/sequencing_array/SMIT_Mac/mapping/bowtieIndices/Bowtie2Indices/Scer3_110_EIJ"
-index_EEJ="~/Documents/LAB_STUFF/sequencing_array/SMIT_Mac/mapping/bowtieIndices/Bowtie2Indices/Scer3_110_EEJ"
+index_EIJ="bowtieIndices/Bowtie2Indices/Scer3_110_EIJ"
+index_EEJ="bowtieIndices/Bowtie2Indices/Scer3_110_EEJ"
 
 
 for R2 in $(cat $input)
 	do
 		
-		output=$(echo $R2 | awk ' BEGIN { FS="/" }; { print $NF }' | cut -f 1-3 -d "_")
-		
+		fields=$(echo $R2 | sed 's/\//	/g' | awk '{print NF}')				
+		if [ $fields -eq 1 ]
+			then
+				output=$(echo $R2 | cut -f 1 -d "." )
+			else
+				output=$(echo $R2 | awk ' BEGIN {FS="/"}; {print $NF}' | sed 's/_R2*//' )
+			fi
 		echo $output
+
 		echo "mapping R2 unspliced (EIJ)"
 		bowtie2 -L 10 --end-to-end -N 0 -k 1 --norc -x $index_EIJ $R2 -S EIJ.sam
 
