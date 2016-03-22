@@ -1,14 +1,9 @@
 # generate bedgraph of 3' end data 3'PE-Seq
 
-samtools view -f 0x40 accepted_hits.bam > Pair_1.sam
-samtools view -H accepted_hits.bam > header.sam
-cat header.sam Pair_1.sam > tmp.sam
-samtools view -S -b tmp.sam > Pair_1.bam
-rm tmp.sam header.sam Pair_1.sam
+samtools view -f 0x40 -b accepted_hits.bam > Pair_1.bam
 bamToBed -i Pair_1.bam -bed12 > Pair_1.bed
 
 cat Pair_1.bed  | awk ' {if ($6=="+") print $1"\t"$2"\t"$2+1"\t"$6 ; if ($6=="-") print $1"\t"$3-1"\t"$3"\t"$6 }' > Pair_1_short.bed
-cat Pair_1_short.bed | awk '$1=="chrI" {print $0 }' | sort -n | uniq -c | awk ' { print $2"\t"$3"\t"$4"\t"$1 }' > chrI
 
 cat Pair_1_short.bed | awk '$1=="chrI" {print $0 }' | sort -n | uniq -c | awk ' { print $2"\t"$3"\t"$4"\t"$1"\t"$5 }' > chrI
 cat Pair_1_short.bed | awk '$1=="chrII" {print $0 }' | sort -n | uniq -c | awk ' { print $2"\t"$3"\t"$4"\t"$1"\t"$5 }' > chrII
@@ -30,5 +25,6 @@ cat Pair_1_short.bed | awk '$1=="chrXVI" {print $0 }' | sort -n | uniq -c | awk 
 
 cat chr* > Pair_1.bedgraph
 rm chr*
-mv Pair_1.bedgraph SC_R1_3end_s.bedgraph
 # filter by strand - -> W, + -> C
+cat Pair_1.bedgraph | awk '$5=="+" {print $1"\t"$2"\t"$3"\t-"$4 }' > SC_R1_3end_C.bedgraph
+cat Pair_1.bedgraph | awk '$5=="-" {print $1"\t"$2"\t"$3"\t"$4 }' > SC_R1_3end_W.bedgraph
