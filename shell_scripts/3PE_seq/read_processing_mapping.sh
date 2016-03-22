@@ -7,4 +7,4 @@
 R1="SC_R1_tr.fastq"
 R2="SC_R2.fastq"
 
-sh /home2/lh465/scripts/tophat2_Scer3_PE.sh $R1 $R2
+sh ~/scripts/tophat2_Scer3_PE.sh $R1 $R2
